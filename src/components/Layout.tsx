@@ -147,12 +147,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               
               <div className="flex items-center space-x-3">
                 <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">{user?.nom}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {user ? `${user.prenom ? `${user.prenom} ` : ''}${user.nom}`.trim() : ''}
+                  </p>
                   <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
                 </div>
                 <div className="h-8 w-8 bg-primary-600 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-medium">
-                    {user?.nom?.charAt(0).toUpperCase()}
+                    {(user?.prenom || user?.nom)?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <button
