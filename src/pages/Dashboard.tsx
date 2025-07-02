@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { supabase } from '../lib/supabase';
-import { DashboardStats } from '../types';
+import { DashboardStats, StatutDemande } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
@@ -55,7 +55,7 @@ const Dashboard: React.FC = () => {
         .reduce((sum, d) => sum + (d.quantite_servie || d.quantite_demandee), 0) || 0;
 
       // Group by status
-      const demandesParStatut = [
+      const demandesParStatut: { statut: StatutDemande; count: number }[] = [
         { statut: 'en_attente', count: demandes?.filter(d => d.statut === 'en_attente').length || 0 },
         { statut: 'valide_superviseur', count: demandes?.filter(d => d.statut === 'valide_superviseur').length || 0 },
         { statut: 'valide_pompiste', count: demandes?.filter(d => d.statut === 'valide_pompiste').length || 0 },
