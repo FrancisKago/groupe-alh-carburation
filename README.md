@@ -38,6 +38,8 @@ ou toute autre commande adaptée à votre environnement.
 - `npm run build` : génère la version de production.
 - `npm run preview` : prévisualise la build.
 - `npm run lint` : exécute ESLint.
+- `npm run format` : applique Prettier sur le code.
+
 
 ## Comptes de démonstration
 
