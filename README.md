@@ -40,7 +40,6 @@ ou toute autre commande adaptée à votre environnement.
 - `npm run lint` : exécute ESLint.
 - `npm run format` : applique Prettier sur le code.
 
-
 ## Comptes de démonstration
 
 Des utilisateurs de démonstration peuvent être créés via la page "Setup Demo" de l'application.
