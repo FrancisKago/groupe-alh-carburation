@@ -16,9 +16,9 @@ const Users: React.FC = () => {
     nom: '',
     email: '',
     role: 'chauffeur' as UserRole,
-    actif: true,
-    mot_de_passe: ''
+    actif: true
   });
+  const [password, setPassword] = useState('');
   const { user: currentUser } = useAuth();
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const Users: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       if (editingUser) {
         const updateData: any = {
@@ -54,11 +54,6 @@ const Users: React.FC = () => {
           actif: formData.actif
         };
 
-        // Only update password if provided
-        if (formData.mot_de_passe) {
-          updateData.mot_de_passe = formData.mot_de_passe; // In real app, hash this
-        }
-
         const { error } = await supabase
           .from('utilisateurs')
           .update(updateData)
@@ -67,15 +62,24 @@ const Users: React.FC = () => {
         if (error) throw error;
         toast.success('Utilisateur modifié avec succès');
       } else {
-        const { error } = await supabase
-          .from('utilisateurs')
-          .insert({
-            ...formData,
-            mot_de_passe: formData.mot_de_passe // In real app, hash this
-          });
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: formData.email,
+          password
+        });
 
-        if (error) throw error;
-        toast.success('Utilisateur créé avec succès');
+        if (authError) throw authError;
+
+        if (authData.user) {
+          const { error } = await supabase.from('utilisateurs').insert({
+            id: authData.user.id,
+            nom: formData.nom,
+            email: formData.email,
+            role: formData.role,
+            actif: formData.actif
+          });
+          if (error) throw error;
+          toast.success('Utilisateur créé avec succès');
+        }
       }
 
       // Log action
@@ -87,7 +91,8 @@ const Users: React.FC = () => {
 
       setShowModal(false);
       setEditingUser(null);
-      setFormData({ nom: '', email: '', role: 'chauffeur', actif: true, mot_de_passe: '' });
+      setFormData({ nom: '', email: '', role: 'chauffeur', actif: true });
+      setPassword('');
       fetchUsers();
     } catch (error: any) {
       console.error('Error saving user:', error);
@@ -101,9 +106,9 @@ const Users: React.FC = () => {
       nom: user.nom,
       email: user.email,
       role: user.role,
-      actif: user.actif,
-      mot_de_passe: ''
+      actif: user.actif
     });
+    setPassword('');
     setShowModal(true);
   };
 
@@ -191,7 +196,8 @@ const Users: React.FC = () => {
         <button
           onClick={() => {
             setEditingUser(null);
-            setFormData({ nom: '', email: '', role: 'chauffeur', actif: true, mot_de_passe: '' });
+            setFormData({ nom: '', email: '', role: 'chauffeur', actif: true });
+            setPassword('');
             setShowModal(true);
           }}
           className="btn-primary mt-4 sm:mt-0"
@@ -363,19 +369,21 @@ const Users: React.FC = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Mot de passe {editingUser ? '(laisser vide pour ne pas changer)' : '*'}
-                  </label>
-                  <input
-                    type="password"
-                    required={!editingUser}
-                    className="input mt-1"
-                    value={formData.mot_de_passe}
-                    onChange={(e) => setFormData({ ...formData, mot_de_passe: e.target.value })}
-                    placeholder="••••••••"
-                  />
-                </div>
+                {!editingUser && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Mot de passe *
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      className="input mt-1"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
