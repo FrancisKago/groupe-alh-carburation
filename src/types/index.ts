@@ -3,6 +3,7 @@ export type UserRole = 'chauffeur' | 'pompiste' | 'superviseur' | 'directeur' | 
 export interface User {
   id: string;
   nom: string;
+  prenom?: string;
   email: string;
   role: UserRole;
   actif: boolean;
